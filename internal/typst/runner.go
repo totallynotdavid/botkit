@@ -29,7 +29,6 @@ const (
 
 	stderrTailBytes = 4096
 	ppi             = "300"
-	deadProxy       = "http://127.0.0.1:9"
 
 	mib             = 1 << 20
 	defaultPixels   = 4096
@@ -219,7 +218,11 @@ func (r *Runner) compile(ctx context.Context, dir, cacheDir string) error {
 	args := []string{
 		"--data=" + strconv.FormatInt(r.limits.Data, 10),
 		"--fsize=" + strconv.FormatInt(r.limits.FileSize, 10),
-		"--", r.typst, "compile",
+		"--", r.typst,
+		// Typst reads --cert before opening a connection. A missing certificate
+		// makes package downloads fail without attempting the network.
+		"--cert", filepath.Join(cacheDir, "no-such-certificate.pem"),
+		"compile",
 		"--root", dir,
 		"--package-cache-path", cacheDir,
 		"--ignore-system-fonts",
@@ -235,13 +238,7 @@ func (r *Runner) compile(ctx context.Context, dir, cacheDir string) error {
 
 	cmd := exec.CommandContext(ctx, r.prlimit, args...) // #nosec G204 -- both binaries are resolved by New and args are fixed.
 	cmd.Dir = dir
-	// Typst has no offline flag but honours the proxy variables, so a dead
-	// proxy makes any package download fail at once.
-	cmd.Env = []string{
-		"PATH=" + os.Getenv("PATH"), "HOME=" + dir,
-		"HTTPS_PROXY=" + deadProxy, "HTTP_PROXY=" + deadProxy,
-		"https_proxy=" + deadProxy, "http_proxy=" + deadProxy,
-	}
+	cmd.Env = []string{"PATH=" + os.Getenv("PATH"), "HOME=" + dir}
 
 	// Killing only typst would leave anything it spawned holding the pipes;
 	// the group dies together.
