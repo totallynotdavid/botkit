@@ -9,5 +9,4 @@ var (
 	ErrGroupExists        = errors.New("group already registered")
 	ErrRankNotFound       = errors.New("rank not found")
 	ErrInvalidInput       = errors.New("invalid input")
-	ErrPermissionDenied   = errors.New("permission denied")
 )
