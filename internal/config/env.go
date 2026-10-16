@@ -33,7 +33,6 @@ type Entry struct {
 	Default string
 }
 
-// FromEnviron reads the process environment.
 func FromEnviron() *Env {
 	return New(os.LookupEnv)
 }
@@ -156,27 +155,6 @@ func (e *Env) Level(key string, def slog.Level) slog.Level {
 	}
 
 	return level
-}
-
-// List reads comma-separated values, trims them, and drops empty items.
-func (e *Env) List(key string) []string {
-	e.record(key, "")
-
-	raw, ok := e.value(key)
-	if !ok {
-		return nil
-	}
-
-	var items []string
-
-	for item := range strings.SplitSeq(raw, ",") {
-		item = strings.TrimSpace(item)
-		if item != "" {
-			items = append(items, item)
-		}
-	}
-
-	return items
 }
 
 func (e *Env) value(key string) (string, bool) {

@@ -51,13 +51,12 @@ func TestUnsetAndEmptyUseDefaults(t *testing.T) {
 		{"Duration", func(e *config.Env) any { return e.Duration("D", time.Minute, 0) }, time.Minute},
 		{"Bool", func(e *config.Env) any { return e.Bool("B", true) }, true},
 		{"Level", func(e *config.Env) any { return e.Level("L", slog.LevelWarn) }, slog.LevelWarn},
-		{"List", func(e *config.Env) any { return e.List("LS") }, []string(nil)},
 	}
 
 	for name, vars := range map[string]map[string]string{
 		"unset": {},
-		"empty": {"S": "", "I": "", "D": "", "B": "", "L": "", "LS": ""},
-		"blank": {"S": "  ", "I": " ", "D": "\t", "B": " ", "L": " ", "LS": " "},
+		"empty": {"S": "", "I": "", "D": "", "B": "", "L": ""},
+		"blank": {"S": "  ", "I": " ", "D": "\t", "B": " ", "L": " "},
 	} {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
@@ -70,12 +69,11 @@ func TestValidValues(t *testing.T) {
 	t.Parallel()
 
 	env := fromMap(map[string]string{
-		"S":  " /var/lib/botkit/bot.db ",
-		"I":  "25",
-		"D":  "90s",
-		"B":  "TRUE",
-		"L":  "debug",
-		"LS": " 51900000001@s.whatsapp.net, ,51900000002@s.whatsapp.net,",
+		"S": " /var/lib/botkit/bot.db ",
+		"I": "25",
+		"D": "90s",
+		"B": "TRUE",
+		"L": "debug",
 	})
 
 	checkReads(t, env, []read{
@@ -84,10 +82,6 @@ func TestValidValues(t *testing.T) {
 		{"Duration", func(e *config.Env) any { return e.Duration("D", 0, time.Second) }, 90 * time.Second},
 		{"Bool", func(e *config.Env) any { return e.Bool("B", false) }, true},
 		{"Level", func(e *config.Env) any { return e.Level("L", slog.LevelInfo) }, slog.LevelDebug},
-		{
-			"List", func(e *config.Env) any { return e.List("LS") },
-			[]string{"51900000001@s.whatsapp.net", "51900000002@s.whatsapp.net"},
-		},
 	})
 }
 
@@ -146,7 +140,6 @@ func TestEntriesListEachSettingOnceWithItsDefault(t *testing.T) {
 	env.Duration("ZERO", 0, 0)
 	env.Bool("B", true)
 	env.Level("L", slog.LevelWarn)
-	env.List("LS")
 	env.Int("I", 8, 1)
 
 	want := []config.Entry{
@@ -158,7 +151,6 @@ func TestEntriesListEachSettingOnceWithItsDefault(t *testing.T) {
 		{Key: "ZERO", Default: "0s"},
 		{Key: "B", Default: "true"},
 		{Key: "L", Default: "warn"},
-		{Key: "LS", Default: ""},
 	}
 
 	if got := env.Entries(); !reflect.DeepEqual(got, want) {
