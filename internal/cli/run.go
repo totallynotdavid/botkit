@@ -133,10 +133,8 @@ func runBot(ctx context.Context, client bot.Transport, built Built, limiter *rat
 	return err //nolint:wrapcheck // ExitStatus reads the runtime's own errors.
 }
 
-// runFollowUps wakes hourly. The flow app applies the stricter 24-hour claim
-// window and checks explicit consent in SQLite. Keeping the scheduler here
-// means the flow app remains usable by the offline REPL and fake tests without
-// making every app responsible for process lifetime.
+// runFollowUps wakes hourly. Keep the scheduler here so the flow app remains
+// usable by the offline REPL and tests without owning the process lifetime.
 func runFollowUps(ctx context.Context, client bot.Transport, app followUpRunner, log *slog.Logger, done chan<- struct{}) {
 	defer close(done)
 

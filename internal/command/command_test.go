@@ -32,7 +32,6 @@ const (
 
 var errBroken = errors.New("broken")
 
-// echo replies with its arguments.
 type echo struct{}
 
 func (echo) Name() string { return "echo" }
@@ -50,7 +49,6 @@ func (echo) Run(ctx context.Context, _ bot.Message, args string, chat *bot.Chat)
 	return nil
 }
 
-// broken always fails.
 type broken struct{}
 
 func (broken) Name() string       { return "broken" }

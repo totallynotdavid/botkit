@@ -17,7 +17,6 @@ import (
 
 var errBoom = errors.New("boom")
 
-// count is an app that counts the messages it handles.
 func count(n *atomic.Int32) appFunc {
 	return func(context.Context, bot.Message, *bot.Chat) error {
 		n.Add(1)

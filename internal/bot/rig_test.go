@@ -28,7 +28,6 @@ type appFunc func(ctx context.Context, m bot.Message, c *bot.Chat) error
 
 func (f appFunc) Handle(ctx context.Context, m bot.Message, c *bot.Chat) error { return f(ctx, m, c) }
 
-// event is one Recorder call.
 type event struct {
 	name  string
 	attrs map[string]slog.Value
@@ -60,7 +59,6 @@ func (r *recorder) named(name string) []event {
 	return slices.DeleteFunc(slices.Clone(r.events), func(e event) bool { return e.name != name })
 }
 
-// reasons lists the reason of every message_dropped event, in order.
 func (r *recorder) reasons() []string {
 	dropped := r.named("message_dropped")
 	reasons := make([]string, 0, len(dropped))
@@ -72,7 +70,6 @@ func (r *recorder) reasons() []string {
 	return reasons
 }
 
-// logs collects log records.
 type logs struct {
 	mu      sync.Mutex
 	records []slog.Record
@@ -98,7 +95,6 @@ func (l *logs) at(level slog.Level) []slog.Record {
 	return slices.DeleteFunc(slices.Clone(l.records), func(r slog.Record) bool { return r.Level != level })
 }
 
-// attr returns the value of the named attribute of r.
 func attr(r slog.Record, key string) string {
 	var value string
 
@@ -120,7 +116,6 @@ type rig struct {
 	logs   *logs
 	bot    *bot.Bot
 
-	// stop cancels the context Run was given.
 	stop    context.CancelFunc
 	stopped chan struct{}
 	err     error // Run's result, set before stopped is closed
@@ -167,7 +162,6 @@ func startWrapped(t *testing.T, app bot.App, opts bot.Options, wrap func(*fake.C
 	return env
 }
 
-// wait blocks until Run has returned.
 func (r *rig) wait(t *testing.T) {
 	t.Helper()
 
@@ -187,7 +181,6 @@ func (r *rig) result(t *testing.T) error {
 	return r.err
 }
 
-// eventually polls cond until it holds.
 func eventually(t *testing.T, what string, cond func() bool) {
 	t.Helper()
 

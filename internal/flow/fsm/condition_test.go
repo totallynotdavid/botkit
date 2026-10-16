@@ -9,7 +9,6 @@ import (
 	"github.com/totallynotdavid/botkit/internal/flow/fsm"
 )
 
-// stub is a node with no transitions.
 const stub = `{"message":{"content":"x"}}`
 
 // flowJSON is a flow whose start node A holds the given transitions, with the

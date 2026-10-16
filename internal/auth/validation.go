@@ -23,7 +23,6 @@ func ValidateRankName(name string) error {
 	return validateRankNameCharacters(name)
 }
 
-// helpers to avoid cyclomatic complexity in the main validation functions.
 func validateCommandLength(command string) error {
 	if command == "" {
 		return ErrInvalidInput
@@ -68,7 +67,6 @@ func validateRankNameCharacters(name string) error {
 	return nil
 }
 
-// utilities for the helpers.
 func isValidCommandChar(r rune) bool {
 	return (r >= 'a' && r <= 'z') ||
 		(r >= 'A' && r <= 'Z') ||

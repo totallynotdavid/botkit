@@ -66,7 +66,6 @@ type Client struct {
 	workDone  chan struct{}
 }
 
-// New returns a client paired as OwnJID.
 func New() *Client {
 	return newClient(true)
 }
@@ -269,7 +268,6 @@ func (c *Client) Download(_ context.Context, media *bot.Media) ([]byte, error) {
 	return data, nil
 }
 
-// Sent returns what the bot sent, in order.
 func (c *Client) Sent() []Sent {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -277,7 +275,6 @@ func (c *Client) Sent() []Sent {
 	return append([]Sent(nil), c.sent...)
 }
 
-// Reactions returns the reactions the bot set, in order.
 func (c *Client) Reactions() []Reaction {
 	c.mu.Lock()
 	defer c.mu.Unlock()

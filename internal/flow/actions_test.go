@@ -16,7 +16,6 @@ import (
 	"github.com/totallynotdavid/botkit/internal/whatsapp/fake"
 )
 
-// photo is an image message the fake client downloads as data.
 func photo(data string) bot.Message {
 	return bot.Message{PushName: "Ana", Media: &bot.Media{Kind: bot.MediaImage, MIME: "image/jpeg", Raw: []byte(data)}}
 }

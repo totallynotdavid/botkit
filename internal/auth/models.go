@@ -25,7 +25,6 @@ type Group struct {
 	RegisteredBy string    `json:"registeredBy"`
 }
 
-// HasCommand checks if rank has permission for command.
 func (r *Rank) HasCommand(command string) bool {
 	for _, cmd := range r.Commands {
 		if cmd == "*" || cmd == command {
@@ -36,8 +35,6 @@ func (r *Rank) HasCommand(command string) bool {
 	return false
 }
 
-// ParseCommands converts comma-separated string to slice.
-// example: "cmd1, cmd2" -> ["cmd1", "cmd2"]
 func ParseCommands(raw string) []string {
 	if raw == "" {
 		return nil
@@ -55,8 +52,6 @@ func ParseCommands(raw string) []string {
 	return commands
 }
 
-// JoinCommands converts slice to comma-separated string.
-// inverse of ParseCommands.
 func JoinCommands(commands []string) string {
 	if len(commands) == 0 {
 		return ""

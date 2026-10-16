@@ -34,7 +34,6 @@ var (
 
 type opener = func(context.Context, *sql.DB, *slog.Logger) (bot.Transport, error)
 
-// spy is a bot that reports the sender of every message it handles.
 type spy struct {
 	handled chan bot.JID
 }

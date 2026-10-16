@@ -343,8 +343,6 @@ func (t *turn) fail(from string, err error) {
 		return
 	}
 
-	// A transient download or action failure is recoverable. Keep the user in
-	// the guided step and make the next valid attempt possible.
 	t.failure = errors.Join(t.failure, err)
 	t.finish(from, textActionRetry)
 }
@@ -452,7 +450,6 @@ func (t *turn) mediaKind() bot.MediaKind {
 	return t.msg.Media.Kind
 }
 
-// store adds a message of the turn to the history.
 func (t *turn) store(direction Direction, content, node string, at time.Time) {
 	t.stored = append(t.stored, StoredMessage{Timestamp: at, Direction: direction, Content: content, NodeID: node})
 }
@@ -470,7 +467,6 @@ func (t *turn) finish(node, text string) {
 	t.replies = append(t.replies, text)
 }
 
-// text renders the message of node.
 func (t *turn) text(ctx context.Context, node string) string {
 	return t.render(ctx, t.app.flow.Nodes[node].Message.Content)
 }

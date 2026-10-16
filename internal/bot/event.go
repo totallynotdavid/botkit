@@ -8,7 +8,6 @@ type Event interface {
 	event()
 }
 
-// MessageReceived carries a message for the app.
 type MessageReceived struct {
 	Message Message
 }

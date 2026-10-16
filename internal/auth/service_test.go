@@ -80,7 +80,7 @@ func TestAuthorizeRejectsInvalidCommand(t *testing.T) {
 }
 
 // A lookup that fails must not grant the command: the decision is not Allowed
-// and the legacy bool is false, so a caller reading either one first is safe.
+// and the error is set, so a caller reading either one first is safe.
 func TestAuthorizeFailsClosedWhenTheLookupFails(t *testing.T) {
 	t.Parallel()
 
