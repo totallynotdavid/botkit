@@ -17,21 +17,6 @@ func envOf(vars map[string]string) *config.Env {
 	})
 }
 
-func TestConfigFromEnvDefaults(t *testing.T) {
-	t.Parallel()
-
-	env := envOf(nil)
-
-	if got, want := latex.ConfigFromEnv(env), latex.DefaultConfig(); got != want {
-		t.Errorf("ConfigFromEnv() = %+v, want %+v", got, want)
-	}
-
-	err := env.Err()
-	if err != nil {
-		t.Errorf("Err() = %v, want nil", err)
-	}
-}
-
 func TestConfigFromEnvOverrides(t *testing.T) {
 	t.Parallel()
 

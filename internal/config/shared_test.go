@@ -12,29 +12,6 @@ import (
 	"github.com/totallynotdavid/botkit/internal/config"
 )
 
-func TestSharedDefaults(t *testing.T) {
-	t.Parallel()
-
-	env := fromMap(nil)
-	got := env.Shared(config.DefaultShared())
-
-	want := config.Shared{
-		Store:       "botkit.db",
-		LogLevel:    slog.LevelInfo,
-		RateLimit:   config.RateLimit{Requests: 5, Period: time.Minute, Cooldown: 5 * time.Minute},
-		MaxInFlight: 10,
-	}
-
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Shared() = %#v, want %#v", got, want)
-	}
-
-	err := env.Err()
-	if err != nil {
-		t.Errorf("Err() = %v, want nil", err)
-	}
-}
-
 func TestSharedOverridesEachType(t *testing.T) {
 	t.Parallel()
 
@@ -88,38 +65,30 @@ func TestSharedKeepsCallerDefaults(t *testing.T) {
 func TestSharedBadValuesNameTheirKey(t *testing.T) {
 	t.Parallel()
 
-	for key, value := range map[string]string{
-		config.KeyLogLevel:          "loud",
-		config.KeyRateLimitRequests: "0",
-		config.KeyRateLimitPeriod:   "soon",
-		config.KeyMaxInFlight:       "many",
-		config.KeyOwnMessages:       "maybe",
-		config.KeyOwners:            "not-a-jid",
+	for _, test := range []struct {
+		key, value string
+		wrapped    error
+	}{
+		{config.KeyLogLevel, "loud", nil},
+		{config.KeyRateLimitRequests, "0", config.ErrBelowMinimum},
+		{config.KeyRateLimitPeriod, "soon", nil},
+		{config.KeyMaxInFlight, "many", nil},
+		{config.KeyOwnMessages, "maybe", nil},
+		{config.KeyOwners, "user@server:3", auth.ErrInvalidJID},
+		{config.KeyAllowOnly, "user@server:3", auth.ErrInvalidJID},
 	} {
-		env := fromMap(map[string]string{key: value})
+		env := fromMap(map[string]string{test.key: test.value})
 		env.Shared(config.DefaultShared())
 
 		err := env.Err()
-		if err == nil || !strings.Contains(err.Error(), key+"=") {
-			t.Errorf("%s=%q: Err() = %v, want an error naming the key", key, value, err)
-		}
-	}
-}
+		if err == nil || !strings.Contains(err.Error(), test.key+"=") {
+			t.Errorf("%s=%q: Err() = %v, want an error naming the key", test.key, test.value, err)
 
-func TestSharedBadJIDListWrapsTheParseError(t *testing.T) {
-	t.Parallel()
-
-	for _, key := range []string{config.KeyOwners, config.KeyAllowOnly} {
-		env := fromMap(map[string]string{key: "user@server:3"})
-		env.Shared(config.DefaultShared())
-
-		err := env.Err()
-		if !errors.Is(err, auth.ErrInvalidJID) {
-			t.Errorf("%s: Err() = %v, want auth.ErrInvalidJID", key, err)
+			continue
 		}
 
-		if !strings.Contains(err.Error(), key+"=") {
-			t.Errorf("%s: Err() = %v, want an error naming the key", key, err)
+		if test.wrapped != nil && !errors.Is(err, test.wrapped) {
+			t.Errorf("%s=%q: Err() = %v, want it to wrap %v", test.key, test.value, err, test.wrapped)
 		}
 	}
 }

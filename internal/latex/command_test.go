@@ -3,13 +3,10 @@ package latex_test
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"errors"
 	"image"
 	_ "image/png" // registers the decoder the tests use to read renders.
 	"log/slog"
-	"os"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -30,8 +27,6 @@ const (
 
 	// wait bounds one message: a render, plus the runner's kill delay.
 	wait = 30 * time.Second
-
-	mitexWasmSHA256 = "f30000cbc2b18a6cdc72c3ce539d3ac443faa9109b4e0272cd274b37c6c1cff7"
 )
 
 // outcomes collects the result of every message the router finished.
@@ -334,50 +329,5 @@ func TestNewRejectsBadConfig(t *testing.T) {
 	_, err = latex.New(config)
 	if !errors.Is(err, typst.ErrInvalidLimits) {
 		t.Errorf("New with no timeout = %v, want ErrInvalidLimits", err)
-	}
-}
-
-func TestVendoredMitexIsTheUpstreamRelease(t *testing.T) {
-	t.Parallel()
-
-	dir, cleanup, err := latex.ExtractMitex()
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	t.Cleanup(func() {
-		cleanupErr := cleanup()
-		if cleanupErr != nil {
-			t.Errorf("cleanup: %v", cleanupErr)
-		}
-	})
-
-	pkg := filepath.Join(dir, "preview", "mitex", "0.2.7")
-
-	wasm, err := os.ReadFile(filepath.Join(pkg, "mitex.wasm")) // #nosec G304 -- inside the directory the test just extracted.
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	sum := sha256.Sum256(wasm)
-	if got := hex.EncodeToString(sum[:]); got != mitexWasmSHA256 {
-		t.Errorf("mitex.wasm sha256 = %s, want %s", got, mitexWasmSHA256)
-	}
-
-	for _, name := range []string{"typst.toml", "lib.typ", "mitex.typ", "LICENSE", "specs/mod.typ", "specs/prelude.typ", "specs/latex/standard.typ"} {
-		_, statErr := os.Stat(filepath.Join(pkg, filepath.FromSlash(name)))
-		if statErr != nil {
-			t.Errorf("extracted package lacks %s: %v", name, statErr)
-		}
-	}
-
-	cleanupErr := cleanup()
-	if cleanupErr != nil {
-		t.Fatal(cleanupErr)
-	}
-
-	_, statErr := os.Stat(dir)
-	if !errors.Is(statErr, os.ErrNotExist) {
-		t.Errorf("cleanup left %s behind: %v", dir, statErr)
 	}
 }

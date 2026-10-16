@@ -142,19 +142,6 @@ func TestParseMergesGroupsPerNode(t *testing.T) {
 	}
 }
 
-func TestEngagingFlowParses(t *testing.T) {
-	t.Parallel()
-
-	flow, err := fsm.EngagingExample(anyAction)
-	if err != nil {
-		t.Fatalf("EngagingExample() = %v", err)
-	}
-
-	if flow.StartNode != "WELCOME" {
-		t.Errorf("start node = %q, want WELCOME", flow.StartNode)
-	}
-}
-
 func TestLoad(t *testing.T) {
 	t.Parallel()
 

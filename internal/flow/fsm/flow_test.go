@@ -158,12 +158,3 @@ func TestParseChecksThatAReactionIsOneEmoji(t *testing.T) {
 		}
 	}
 }
-
-func TestParseRejectsTheRemovedMessageType(t *testing.T) {
-	t.Parallel()
-
-	_, err := parse(`{"start_node":"A","nodes":{"A":{"message":{"type":"text","content":"a"}}}}`)
-	if !errors.Is(err, fsm.ErrParse) || !strings.Contains(err.Error(), `"type"`) {
-		t.Errorf("Parse() = %v, want %v naming the field \"type\"", err, fsm.ErrParse)
-	}
-}

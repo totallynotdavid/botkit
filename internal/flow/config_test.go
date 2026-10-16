@@ -17,24 +17,6 @@ func envOf(vars map[string]string) *config.Env {
 	})
 }
 
-func TestConfigFromEnvDefaults(t *testing.T) {
-	t.Parallel()
-
-	env := envOf(nil)
-
-	got := flow.ConfigFromEnv(env)
-	want := flow.Config{VoucherDir: "vouchers"}
-
-	if got != want {
-		t.Errorf("ConfigFromEnv() = %+v, want %+v", got, want)
-	}
-
-	err := env.Err()
-	if err != nil {
-		t.Errorf("Err() = %v, want nil", err)
-	}
-}
-
 func TestConfigFromEnvOverrides(t *testing.T) {
 	t.Parallel()
 

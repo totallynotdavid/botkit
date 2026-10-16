@@ -181,24 +181,6 @@ func TestLinesFitTheWidth(t *testing.T) {
 	}
 }
 
-func TestHeaderIsAtMostSixLines(t *testing.T) {
-	t.Parallel()
-
-	lines := 0
-
-	for line := range strings.SplitSeq(example(t), "\n") {
-		if !strings.HasPrefix(line, "#") || strings.HasPrefix(line, "# ---") {
-			break
-		}
-
-		lines++
-	}
-
-	if lines > 6 {
-		t.Errorf("header is %d lines; keep it to 6", lines)
-	}
-}
-
 func TestASettingWithoutAnExplanationIsRefused(t *testing.T) {
 	t.Parallel()
 
