@@ -23,12 +23,9 @@ const (
 	// have been told to stop.
 	shutdownGrace = 10 * time.Second
 
-	// refusalSlots caps the replies to refused messages that run at once. A
-	// reply is at most two sends, so a flood puts at most eight in flight.
-	// That is fewer than the sends the handlers of DefaultMaxInFlight
-	// messages can start, and enough to answer a small burst of refusals
-	// without dropping any. The size is fixed so that raising MaxInFlight
-	// does not raise what a flood can cause.
+	// refusalSlots bounds concurrent refusal replies only. A completed reply
+	// returns its token, so a flood can still increase outbound traffic. The
+	// fixed size keeps MaxInFlight from changing refusal concurrency.
 	refusalSlots = 4
 
 	rateLimitReaction = "⚠️"
@@ -323,8 +320,10 @@ func (b *Bot) spawn(work func(ctx context.Context)) bool {
 }
 
 // refuse runs a reply to a refused message on its own goroutine. Refusals have
-// their own bound, apart from slots, so a flood cannot take a place from real
-// work. When the bound is full, or the runtime has stopped, there is no reply.
+// their own bound, apart from slots, so they cannot take a place from real
+// work. The bound limits concurrent refusal replies, not total traffic. A
+// completed reply returns its token. When the bound is full, or the runtime has
+// stopped, there is no reply.
 func (b *Bot) refuse(reply func(ctx context.Context)) bool {
 	select {
 	case b.refusals <- struct{}{}:

@@ -47,8 +47,9 @@ lifecycle code.
 `internal/bot` receives events from a `Transport` and hands accepted messages to
 the `App` on handler goroutines. It drops own, group, non-allowed, rate-limited,
 and over-capacity messages before the app sees them. It answers a refused
-message from a separate pool of four, so a flood cannot take a slot from real
-work.
+message from a separate pool of four, so refusal replies cannot take a handler
+slot from real work. `refusals` bounds concurrent refusal replies only. It does
+not bound aggregate outbound traffic, which can grow with the flood rate.
 
 The runtime owns one lifetime context. A caller cancellation stops the run. A
 session end stops it and returns a
