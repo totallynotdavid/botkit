@@ -1,8 +1,9 @@
 # Architecture
 
-botkit has two binaries and one shared runtime. A binary describes its bot. The
-runtime owns the WhatsApp connection, message filtering, concurrency, shutdown,
-and exit status. This document maps the code. For what the bots do, read
+botkit has two bot binaries, one maintenance utility, and one shared runtime. A
+bot binary describes its bot. The utility generates `.env.example`. The runtime
+owns the WhatsApp connection, message filtering, concurrency, shutdown, and exit
+status. This document maps the code. For what the bots do, read
 [the latex bot](latex-bot.md) and [the flow bot](flow-bot.md).
 
 The code, not this document, says which package imports which. Print each
@@ -16,6 +17,7 @@ mise exec -- go list -f '{{.ImportPath}}: {{join .Imports " "}}' ./...
 
 | Package                                               | Owns                                                                                                                                                             |
 | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`cmd/envfile`](../cmd/envfile/main.go)               | Generating `.env.example` from the settings the bots read.                                                                                                       |
 | [`cmd/latex`](../cmd/latex/main.go)                   | The latex bot's ranks, its `!` command router, and group support.                                                                                                |
 | [`cmd/flow`](../cmd/flow/main.go)                     | The flow bot's flow loading, store, and actions. It accepts direct messages only.                                                                                |
 | [`internal/cli`](../internal/cli)                     | The subcommands `run`, `pair`, `user`, `group`, and `--repl`, the assembly of a bot, and the exit status. A bot adds its own subcommands, as `handoff` for flow. |

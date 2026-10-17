@@ -13,19 +13,20 @@ is the C compiler for `go test -race`, which needs cgo, so a clean host needs no
 
 ## Tasks
 
-| Task                     | Does                                                       |
-| ------------------------ | ---------------------------------------------------------- |
-| `mise run install`       | Downloads the Go modules.                                  |
-| `mise run lint`          | Checks Go formatting and lint rules, and the Markdown.     |
-| `mise run fix`           | Formats the Go code and the documents, applies lint fixes. |
-| `mise run test`          | Runs `go test -race ./...` with Zig as the C compiler.     |
-| `mise run build`         | Builds `bin/botkit-flow` and `bin/botkit-latex`.           |
-| `mise run check`         | Runs `lint`, `test`, and `build`. Changes no tracked file. |
-| `mise run install:bin`   | Builds and installs both bots into `$PREFIX/bin`.          |
-| `mise run install:units` | Installs the systemd units into `$UNIT_DIR`.               |
-| `mise run env:example`   | Rewrites `.env.example` from the settings the bots read.   |
-| `mise run dev:flow`      | Runs the flow bot from source, loading `.env`.             |
-| `mise run dev:latex`     | Runs the latex bot from source, loading `.env`.            |
+| Task                         | Does                                                                            |
+| ---------------------------- | ------------------------------------------------------------------------------- |
+| `mise run install`           | Downloads the Go modules.                                                       |
+| `mise run lint`              | Checks Go formatting and lint rules, and the Markdown.                          |
+| `mise run fix`               | Formats the Go code and the documents, applies lint fixes.                      |
+| `mise run test`              | Runs `go test -race ./...` with Zig as the C compiler.                          |
+| `mise run build`             | Builds `bin/botkit-flow` and `bin/botkit-latex`.                                |
+| `mise run check`             | Runs `lint`, `test`, `build`, and `check:env-example`. Changes no tracked file. |
+| `mise run install:bin`       | Builds and installs both bots into `$PREFIX/bin`.                               |
+| `mise run install:units`     | Installs the systemd units into `$UNIT_DIR`.                                    |
+| `mise run env:example`       | Rewrites `.env.example` from the settings the bots read.                        |
+| `mise run check:env-example` | Checks `.env.example` against the settings the bots read.                       |
+| `mise run dev:flow`          | Runs the flow bot from source, loading `.env`.                                  |
+| `mise run dev:latex`         | Runs the latex bot from source, loading `.env`.                                 |
 
 `install:bin` installs into `$PREFIX/bin` (default `/usr/local/bin`) and
 `install:units` into `$UNIT_DIR` (default `/etc/systemd/system`).
@@ -45,8 +46,8 @@ A bot's settings come from the code that reads them. After you add or change
 one, give it an explanation in
 [`internal/envfile`](../internal/envfile/envfile.go), run
 `mise run env:example`, and update
-[docs/configuration.md](../docs/configuration.md). `mise run test` fails while
-`.env.example` is out of date.
+[docs/configuration.md](../docs/configuration.md). `mise run check:env-example`
+fails while `.env.example` is out of date.
 
 ## Documentation
 
