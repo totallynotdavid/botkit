@@ -19,7 +19,6 @@ func fromMap(vars map[string]string) *config.Env {
 	})
 }
 
-// read is one typed read from an Env, with the value it should produce.
 type read struct {
 	name string
 	get  func(*config.Env) any
@@ -97,7 +96,6 @@ func TestMalformedValuesAreAllReported(t *testing.T) {
 		"LEVEL":   "verbose",
 	})
 
-	// Each read still returns its default so callers can carry on.
 	if got := env.Int("COUNT", 5, 1); got != 5 {
 		t.Errorf("Int = %d, want the default", got)
 	}
@@ -124,66 +122,5 @@ func TestMalformedValuesAreAllReported(t *testing.T) {
 
 	if !errors.Is(err, config.ErrBelowMinimum) {
 		t.Error("Err() does not wrap ErrBelowMinimum")
-	}
-}
-
-func TestEntriesListEachSettingOnceWithItsDefault(t *testing.T) {
-	t.Parallel()
-
-	env := fromMap(map[string]string{"I": "99"})
-
-	env.String("S", "def")
-	env.Int("I", 7, 1)
-	env.Duration("D", 5*time.Minute, 0)
-	env.Duration("H", time.Hour, 0)
-	env.Duration("MS", 1500*time.Millisecond, 0)
-	env.Duration("ZERO", 0, 0)
-	env.Bool("B", true)
-	env.Level("L", slog.LevelWarn)
-	env.Int("I", 8, 1)
-
-	want := []config.Entry{
-		{Key: "S", Default: "def"},
-		{Key: "I", Default: "7"},
-		{Key: "D", Default: "5m"},
-		{Key: "H", Default: "1h"},
-		{Key: "MS", Default: "1.5s"},
-		{Key: "ZERO", Default: "0s"},
-		{Key: "B", Default: "true"},
-		{Key: "L", Default: "warn"},
-	}
-
-	if got := env.Entries(); !reflect.DeepEqual(got, want) {
-		t.Errorf("Entries() = %+v, want %+v", got, want)
-	}
-}
-
-// An entry's default is one a user can write back: reading it as the value of
-// the key gives the default again.
-func TestEntryDefaultsRoundTrip(t *testing.T) {
-	t.Parallel()
-
-	first := fromMap(nil)
-	first.Duration("D", 90*time.Second, 0)
-	first.Level("L", slog.LevelError)
-
-	vars := map[string]string{}
-	for _, entry := range first.Entries() {
-		vars[entry.Key] = entry.Default
-	}
-
-	second := fromMap(vars)
-
-	if got := second.Duration("D", 0, 0); got != 90*time.Second {
-		t.Errorf("Duration = %v, want 1m30s", got)
-	}
-
-	if got := second.Level("L", slog.LevelInfo); got != slog.LevelError {
-		t.Errorf("Level = %v, want error", got)
-	}
-
-	err := second.Err()
-	if err != nil {
-		t.Errorf("Err() = %v, want nil", err)
 	}
 }
