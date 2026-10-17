@@ -41,7 +41,16 @@ run = "go run ./cmd/flow"
 
 [tasks."env:example"]
 description = "Rewrite .env.example from the settings the bots read"
-run = "go test ./internal/envfile -run TestExampleIsCurrent -update"
+run = "go run ./cmd/envfile"
+
+[tasks."check:env-example"]
+description = "Check .env.example against the settings the bots read"
+run = '''
+tmp="$(mktemp)"
+trap 'rm -f "$tmp"' EXIT
+go run ./cmd/envfile --stdout >"$tmp"
+diff --unified=3 .env.example "$tmp"
+'''
 
 [tasks.test]
 description = "Run all tests"
@@ -83,4 +92,4 @@ run = ["golangci-lint fmt", "golangci-lint run --fix", "oxfmt ."]
 
 [tasks.check]
 description = "Lint, test and build without changing tracked files"
-depends = ["lint", "test", "build"]
+depends = ["lint", "test", "build", "check:env-example"]
