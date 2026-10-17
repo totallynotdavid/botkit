@@ -43,9 +43,7 @@ type Bot struct {
 	Entries []config.Entry
 }
 
-// Bots returns the bots as their binaries configure them. Each binary's own
-// command must read the same settings: the tests of cmd/latex and cmd/flow
-// compare them.
+// Bots returns the bots as their binaries configure them.
 func Bots() []Bot {
 	latexBot := cli.Command{
 		Name: "latex",
