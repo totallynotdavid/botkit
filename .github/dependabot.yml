@@ -1,10 +1,26 @@
 version: 2
 updates:
   - package-ecosystem: gomod
-    directory: /
+    directories:
+      - /
     schedule:
-      interval: daily
-  - package-ecosystem: "github-actions"
-    directory: "/"
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directories:
+      - /
     schedule:
-      interval: "weekly"
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      all:
+        patterns:
+          - "*"
