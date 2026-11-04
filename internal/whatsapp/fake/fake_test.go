@@ -353,7 +353,11 @@ func TestStalledConnectStillDeliversEvents(t *testing.T) {
 	}
 
 	cancel()
-	<-result
+
+	err = <-result
+	if !errors.Is(err, context.Canceled) {
+		t.Errorf("Connect() = %v, want context canceled", err)
+	}
 
 	client.EndSession(bot.Replaced, "")
 

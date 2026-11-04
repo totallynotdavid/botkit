@@ -125,7 +125,6 @@ func TestOpenPathsNeedingEscapes(t *testing.T) {
 	}
 }
 
-//nolint:paralleltest // t.Chdir changes the process's directory.
 func TestOpenRelativePath(t *testing.T) {
 	dir := t.TempDir()
 	t.Chdir(dir)

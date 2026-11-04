@@ -87,32 +87,41 @@ func runREPLSession(ctx context.Context, setup prepared, cfg settings, log *slog
 
 	err := client.WaitConnected(runCtx)
 	if err != nil {
-		stop()
-		<-done
+		runErr := stopREPLRuntime(stop, done)
+		if runErr != nil {
+			return errors.Join(fmt.Errorf("wait for fake connection: %w", err), runErr)
+		}
 
 		return fmt.Errorf("wait for fake connection: %w", err)
 	}
 
 	err = writeREPLHeader(out)
 	if err != nil {
-		stop()
-		<-done
+		runErr := stopREPLRuntime(stop, done)
+		if runErr != nil {
+			return errors.Join(err, runErr)
+		}
 
 		return err
 	}
 
 	loopErr := runREPLLoop(runCtx, client, input, out)
 
-	stop()
-
-	runErr := <-done
+	runErr := stopREPLRuntime(stop, done)
 
 	if loopErr != nil {
-		return loopErr
+		return errors.Join(loopErr, runErr)
 	}
 
-	if runErr != nil && !errors.Is(runErr, context.Canceled) {
-		return fmt.Errorf("REPL bot: %w", runErr)
+	return runErr
+}
+
+func stopREPLRuntime(stop context.CancelFunc, done <-chan error) error {
+	stop()
+
+	err := <-done
+	if err != nil && !errors.Is(err, context.Canceled) {
+		return fmt.Errorf("REPL bot: %w", err)
 	}
 
 	return nil

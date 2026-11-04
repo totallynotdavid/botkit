@@ -217,7 +217,10 @@ func TestRunAllowsFiveRequestsAMinute(t *testing.T) {
 	stop()
 
 	select {
-	case <-done:
+	case err := <-done:
+		if !errors.Is(err, context.Canceled) {
+			t.Errorf("Run() = %v, want context.Canceled", err)
+		}
 	case <-time.After(10 * time.Second):
 		t.Fatal("Run did not return")
 	}
