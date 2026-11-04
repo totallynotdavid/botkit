@@ -2,13 +2,13 @@
 _.file = ".env"
 
 [tools]
-go = "1.27.2"
-golangci-lint = "2.14.0"
+go = "1.27.3"
+golangci-lint = "2.15.0"
 typst = "0.15.1"
 sqlite = "3.54.1"
-zig = "0.17.0"
-node = "24.22.0"
-oxfmt = "0.74.0"
+zig = "0.17.1"
+node = "26.13.0"
+oxfmt = "0.76.0"
 
 [tasks.install]
 description = "Download the Go modules in go.sum"
