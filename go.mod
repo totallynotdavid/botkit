@@ -6,7 +6,7 @@ require (
 	github.com/mdp/qrterminal/v3 v3.2.1
 	go.mau.fi/whatsmeow v0.0.0-20261102152715-54038813c47f
 	golang.org/x/term v0.47.0
-	modernc.org/sqlite v1.61.1
+	modernc.org/sqlite v1.62.0
 )
 
 require (
